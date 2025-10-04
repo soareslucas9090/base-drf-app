@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_spectacular',
     'drf_spectacular_sidecar',
+    'simple_history',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +72,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 DEBUG_TOOLBAR_PANELS = [
