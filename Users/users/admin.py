@@ -3,7 +3,14 @@ Admin para o app Users
 """
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User
+from .models import User, Profile
+
+
+class ProfileInline(admin.TabularInline):
+    model = Profile
+    extra = 0
+    fields = ('type', 'bio', 'avatar', 'status')
+    can_delete = True
 
 
 @admin.register(User)
@@ -16,6 +23,7 @@ class UserAdmin(BaseUserAdmin):
         'is_active',
         'is_staff',
         'email_verified',
+        'status',
         'date_joined'
     )
     
@@ -24,6 +32,7 @@ class UserAdmin(BaseUserAdmin):
         'is_staff',
         'is_superuser',
         'email_verified',
+        'status',
         'date_joined'
     )
     
@@ -39,9 +48,8 @@ class UserAdmin(BaseUserAdmin):
             'fields': (
                 'phone',
                 'birth_date',
-                'bio',
-                'avatar',
-                'email_verified'
+                'email_verified',
+                'status'
             )
         }),
     )
@@ -52,7 +60,49 @@ class UserAdmin(BaseUserAdmin):
                 'email',
                 'phone',
                 'birth_date',
-                'email_verified'
+                'email_verified',
+                'status'
+            )
+        }),
+    )
+    
+    inlines = [ProfileInline]
+
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'type',
+        'status',
+        'created_at'
+    )
+    
+    list_filter = (
+        'type',
+        'status',
+        'created_at'
+    )
+    
+    search_fields = (
+        'user__username',
+        'user__email',
+        'user__first_name',
+        'user__last_name'
+    )
+    
+    fieldsets = (
+        ('Informações Principais', {
+            'fields': (
+                'user',
+                'type',
+                'status'
+            )
+        }),
+        ('Informações Adicionais', {
+            'fields': (
+                'bio',
+                'avatar'
             )
         }),
     )

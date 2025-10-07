@@ -20,15 +20,14 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 
-CSRF_TRUSTED_ORIGINS = os.environ.get(
-    'CSRF_TRUSTED_ORIGINS', ''
-).split(',')
+csrf_origins = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+CSRF_TRUSTED_ORIGINS = [origin for origin in csrf_origins.split(',') if origin]
 
-CORS_ORIGIN_WHITELIST = os.environ.get(
-    'CORS_ORIGIN_WHITELIST', ''
-).split(',')
+cors_origins = os.environ.get('CORS_ORIGIN_WHITELIST', '')
+CORS_ORIGIN_WHITELIST = [origin for origin in cors_origins.split(',') if origin]
 
-INTERNAL_IPS = os.environ.get('INTERNAL_IPS', '').split(',')
+internal_ips = os.environ.get('INTERNAL_IPS', '')
+INTERNAL_IPS = [ip for ip in internal_ips.split(',') if ip]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -62,12 +61,11 @@ DEFAULT_ROOT_APPS = [
 ]
 
 AUTH_APPS = [
+    'Users.users',
     'Auth.auth'
 ]
 
-INSTALLED_APPS = [
-    DEFAULT_ROOT_APPS + AUTH_APPS
-]
+INSTALLED_APPS = DEFAULT_ROOT_APPS + AUTH_APPS
 
 MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',

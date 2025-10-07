@@ -19,20 +19,18 @@ class User(AbstractUser, BasicModel, ModelHelperMixin):
         blank=True,
         null=True
     )
-    bio = models.TextField(
-        'Biografia',
-        blank=True,
-        null=True
-    )
-    avatar = models.CharField(
-        'Avatar',
-        max_length=255,
-        blank=True,
-        null=True
-    )
     email_verified = models.BooleanField(
         'Email Verificado',
         default=False
+    )
+    status = models.IntegerField(
+        'Status',
+        choices=(
+            (0, 'Inativo'),
+            (1, 'Ativo'),
+            (2, 'Suspenso'),
+        ),
+        default=1
     )
     
     helper_class = UserHelpers
@@ -45,3 +43,53 @@ class User(AbstractUser, BasicModel, ModelHelperMixin):
     
     def __str__(self):
         return self.username
+
+
+class Profile(BasicModel, ModelHelperMixin):
+    PROFILE_TYPE_CHOICES = (
+        ('user', 'Usuário'),
+        ('manager', 'Gestor'),
+    )
+    
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='profiles',
+        verbose_name='Usuário'
+    )
+    type = models.CharField(
+        'Tipo',
+        max_length=10,
+        choices=PROFILE_TYPE_CHOICES,
+        default='user'
+    )
+    bio = models.TextField(
+        'Biografia',
+        blank=True,
+        null=True
+    )
+    avatar = models.CharField(
+        'Avatar',
+        max_length=255,
+        blank=True,
+        null=True
+    )
+    status = models.IntegerField(
+        'Status',
+        choices=(
+            (0, 'Inativo'),
+            (1, 'Ativo'),
+            (2, 'Suspenso'),
+        ),
+        default=1
+    )
+    
+    class Meta:
+        db_table = 'profiles'
+        verbose_name = 'Perfil'
+        verbose_name_plural = 'Perfis'
+        ordering = ['-created_at']
+        unique_together = ['user', 'type']
+    
+    def __str__(self):
+        return f'{self.user.username} - {self.get_type_display()}'
