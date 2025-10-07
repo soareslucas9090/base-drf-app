@@ -45,7 +45,7 @@ DATABASES = {
     }
 }
 
-INSTALLED_APPS = [
+DEFAULT_ROOT_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -59,6 +59,14 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'drf_spectacular_sidecar',
     'simple_history',
+]
+
+AUTH_APPS = [
+    'Auth.auth'
+]
+
+INSTALLED_APPS = [
+    DEFAULT_ROOT_APPS + AUTH_APPS
 ]
 
 MIDDLEWARE = [
@@ -125,6 +133,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTH_USER_MODEL = 'users.User'
 
 LANGUAGE_CODE = 'pt-br'
 
