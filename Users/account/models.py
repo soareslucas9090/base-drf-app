@@ -1,12 +1,9 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils import timezone
 
 from AppCore.basics.models.models import BasicModel
-from AppCore.core.helpers.helpers_mixin import ModelHelperMixin
 
 
-class EmailAccountCode(AbstractUser, BasicModel, ModelHelperMixin):
+class EmailAccountCode(BasicModel):
     email = models.EmailField('Email')
     code = models.CharField('Código', max_length=6, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
