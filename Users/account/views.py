@@ -15,7 +15,7 @@ from AppCore.common.texts.emails import EMAIL_CREATE_ACCOUNT
 
 from Users.users.models import User
 from .serializers import (
-    CreateAccountSerializer, CreateAccountConfirmCodeSerializer, PasswordConfirmSerializer
+    CreateAccountSerializer, CreateAccountConfirmCodeSerializer, PasswordConfirmCreateAccountSerializer
 )
 from .models import EmailAccountCode
 
@@ -90,7 +90,7 @@ class CreateAccountConfirmCodePostView(BasicPostAPIView):
 
 
 class ConfirmPasswordAccountPostView(BasicPostAPIView):
-    serializer_class = PasswordConfirmSerializer
+    serializer_class = PasswordConfirmCreateAccountSerializer
     permission_classes = [AllowAny]
     
     def do_action_post(self, serializer, request):

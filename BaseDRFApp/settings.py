@@ -31,7 +31,7 @@ INTERNAL_IPS = [ip for ip in internal_ips.split(',') if ip]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOW_METHODS = ["*"]
+CORS_ALLOW_METHODS = ['*']
 
 DATABASES = {
     'default': {
@@ -61,11 +61,15 @@ DEFAULT_ROOT_APPS = [
 ]
 
 AUTH_APPS = [
-    'Users.users',
     'Auth.auth'
 ]
 
-INSTALLED_APPS = DEFAULT_ROOT_APPS + AUTH_APPS
+USERS_APPS = [
+    'Users.users',
+    'Users.account',
+]
+
+INSTALLED_APPS = DEFAULT_ROOT_APPS + AUTH_APPS + USERS_APPS
 
 MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -79,10 +83,11 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
-AUTH_USER_MODEL = "users.User"
-ACCOUNT_AUTHENTICATION_METHOD = "email"
+AUTH_USER_MODEL = 'users.User'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 
