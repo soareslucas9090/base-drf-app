@@ -26,10 +26,10 @@ class CreateAccountPostView(BasicPostAPIView):
     permission_classes = [AllowAny]
     success_message = "Código de verificação enviado para o email informado."
     
-    def _exists_user(self, email):
-        if User.object.filter(email=email).exists():
+    def _exists_user_profile(self, email, type_profile):
+        if User.object.filter(email=email, profiles__type=type_profile).exists(): 
             return {
-                'message': 'Já existe um usuário com este email.',
+                'message': 'Já existe um usuário com este email para este perfil.',
                 'status_code': status.HTTP_404_NOT_FOUND
             }
             
@@ -43,8 +43,8 @@ class CreateAccountPostView(BasicPostAPIView):
         ).delete()
         
 
-    def _get_code(self, email):
-        self._exists_user(email)
+    def _get_code(self, email, type_profile):
+        self._exists_user_profile(email, type_profile)
         
         self._del_codes_expired(email)
         
@@ -55,8 +55,9 @@ class CreateAccountPostView(BasicPostAPIView):
     
     def do_action_post(self, serializer, request):
         email = serializer.get('email')
+        type_profile = serializer.get('type_profile')
         
-        random_code = self._get_code(email)
+        random_code = self._get_code(email, type_profile)
         
         email_account_code = EmailAccountCode.objects.create(
             email=email,
@@ -77,7 +78,6 @@ class CreateAccountConfirmCodePostView(BasicPostAPIView):
     permission_classes = [AllowAny]
     
     def do_action_post(self, serializer, request):
-    
         email = serializer.get('email')
         code = serializer.get('code')
 
@@ -96,9 +96,32 @@ class ConfirmPasswordAccountPostView(BasicPostAPIView):
     def do_action_post(self, serializer, request):
         email = serializer.get('email')
         code = serializer.get('code')
-        password = serializer.get('password')
 
         email_account_code = EmailAccountCode.objects.get(
             email=email, code=code, is_validated=True
         )
-
+        
+        email_account_code.delete()
+        
+        password = serializer.get('password')
+        phone = serializer.get('phone')
+        birth_date = serializer.get('birth_date')
+        type_profile = serializer.get('type_profile')
+        bio = serializer.get('bio')
+        
+        User.object.create_user(
+            email=email,
+            name=serializer.get('name'),
+            password=password,
+            phone=phone,
+            birth_date=birth_date,
+            profiles=[{
+                'type': type_profile,
+                'bio': bio,
+            }]
+        )
+        
+        return {
+            'message': 'Usuário criado com sucesso.',
+            'status_code': status.HTTP_201_CREATED
+        }

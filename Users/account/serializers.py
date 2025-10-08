@@ -1,13 +1,27 @@
 from rest_framework import serializers
 
+from Users.users.choices import PROFILE_TYPE_CHOICES
+
 
 class CreateAccountSerializer(serializers.Serializer):
     email = serializers.EmailField(write_only=True)
+    type_profile = serializers.CharField(write_only=True)
+    
+    def validate_type_profile(self, value):
+        valid_types = [choice[0] for choice in PROFILE_TYPE_CHOICES]
+
+        if value not in valid_types:
+            raise serializers.ValidationError(
+                f"Tipo de perfil inválido. Escolha entre: {', '.join(valid_types)}"
+            )
+
+        return value
 
 
 class CreateAccountConfirmCodeSerializer(serializers.Serializer):
     email = serializers.EmailField(write_only=True)
     code = serializers.CharField(write_only=True)
+    type_profile = serializers.CharField(write_only=True)
 
     def validate_code(self, value):
         if len(value) != 6:
@@ -16,19 +30,51 @@ class CreateAccountConfirmCodeSerializer(serializers.Serializer):
             )
 
         return value
+
+    def validate_type_profile(self, value):
+        valid_types = [choice[0] for choice in PROFILE_TYPE_CHOICES]
+
+        if value not in valid_types:
+            raise serializers.ValidationError(
+                f"Tipo de perfil inválido. Escolha entre: {', '.join(valid_types)}"
+            )
+
+        return value
     
     
-class PasswordConfirmSerializer(serializers.Serializer):
+class PasswordConfirmCreateAccountSerializer(serializers.Serializer):
     email = serializers.EmailField(write_only=True)
     code = serializers.CharField(write_only=True)
+    name = serializers.CharField(max_length=150, write_only=True)
     password = serializers.CharField(write_only=True)
     password_confirm = serializers.CharField(write_only=True)
+    phone = serializers.CharField(max_length=20, required=False, allow_blank=True, allow_null=True)
+    birth_date = serializers.DateField(required=False, allow_null=True)
+    type_profile = serializers.CharField(write_only=True)
+    bio = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
     def validate_password(self, value):
         if len(value) < 8:
             raise serializers.ValidationError(
                 "A senha precisa ter 8 caracteres ou mais."
             )
+        return value
+    
+    def validate_code(self, value):
+        if len(value) != 6:
+            raise serializers.ValidationError(
+                "O código deve possuir 6 dígitos."
+            )
+        return value
+    
+    def validate_type_profile(self, value):
+        valid_types = [choice[0] for choice in PROFILE_TYPE_CHOICES]
+
+        if value not in valid_types:
+            raise serializers.ValidationError(
+                f"Tipo de perfil inválido. Escolha entre: {', '.join(valid_types)}"
+            )
+
         return value
 
     def validate(self, data):
