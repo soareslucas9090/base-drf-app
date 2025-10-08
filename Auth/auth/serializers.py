@@ -2,6 +2,12 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import get_user_model
 
+from AppCore.common.texts.messages import (
+    USUARIO_INATIVO_OU_SUSPENSO, USUARIO_SEM_PERFIL_CADASTRADO, PERFIL_INATIVO_OU_SUSPENSO
+)
+
+from Users.users.choices import USER_STATUS_ATIVO, PROFILE_STATUS_ATIVO, PROFILE_TYPE_MANAGER
+
 User = get_user_model()
 
 
@@ -25,21 +31,21 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         
         user = self.user
         
-        if user.status != 1:
+        if user.status != USER_STATUS_ATIVO:
             raise serializers.ValidationError({
-                'detail': 'Usuário inativo ou suspenso.'
+                'detail': USUARIO_INATIVO_OU_SUSPENSO
             })
         
         profile = user.profiles.filter(type=login_type).first()
         
         if not profile:
             raise serializers.ValidationError({
-                'detail': f'Você não possui um perfil de {login_type} cadastrado.'
+                'detail': USUARIO_SEM_PERFIL_CADASTRADO % login_type
             })
         
-        if profile.status != 1:
+        if profile.status != PROFILE_STATUS_ATIVO:
             raise serializers.ValidationError({
-                'detail': 'Perfil inativo ou suspenso.'
+                'detail': PERFIL_INATIVO_OU_SUSPENSO
             })
         
         data['profile'] = {

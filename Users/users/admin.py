@@ -16,10 +16,8 @@ class ProfileInline(admin.TabularInline):
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     list_display = (
-        'username',
         'email',
-        'first_name',
-        'last_name',
+        'name',
         'is_active',
         'is_staff',
         'email_verified',
@@ -37,10 +35,8 @@ class UserAdmin(BaseUserAdmin):
     )
     
     search_fields = (
-        'username',
         'email',
-        'first_name',
-        'last_name'
+        'name'
     )
     
     fieldsets = BaseUserAdmin.fieldsets + (
@@ -53,6 +49,8 @@ class UserAdmin(BaseUserAdmin):
             )
         }),
     )
+    
+    ordering = ['email']
     
     add_fieldsets = BaseUserAdmin.add_fieldsets + (
         ('Informações Adicionais', {
@@ -85,10 +83,8 @@ class ProfileAdmin(admin.ModelAdmin):
     )
     
     search_fields = (
-        'user__username',
         'user__email',
-        'user__first_name',
-        'user__last_name'
+        'name'
     )
     
     fieldsets = (

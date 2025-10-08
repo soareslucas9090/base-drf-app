@@ -1,21 +1,11 @@
+from django.utils import timezone
+
 from AppCore.core.helpers.helpers import ModelInstanceHelpers
 
 
 class UserHelpers(ModelInstanceHelpers):
     
     def add_profile(self, profile_type, bio='', avatar='', status=1):
-        """
-        Adiciona um novo perfil ao usuário.
-        
-        Args:
-            profile_type: Tipo do perfil ('user' ou 'manager')
-            bio: Biografia do perfil
-            avatar: Avatar do perfil
-            status: Status do perfil (0=Inativo, 1=Ativo, 2=Suspenso)
-            
-        Returns:
-            Profile: O perfil criado ou None se já existir
-        """
         from .models import Profile
         
         existing_profile = self.object_instance.profiles.filter(type=profile_type).first()
@@ -39,3 +29,7 @@ class UserHelpers(ModelInstanceHelpers):
         """Verifica se o usuário possui um perfil do tipo especificado"""
         return self.object_instance.profiles.filter(type=profile_type).exists()
 
+class PasswordResetCodeHelpers(ModelInstanceHelpers):
+    
+    def is_valid(self):
+        return self.expiration_time > timezone.now()
