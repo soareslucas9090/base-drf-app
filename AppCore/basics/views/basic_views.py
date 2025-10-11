@@ -23,6 +23,7 @@ from AppCore.common.texts.messages import (
 
 class BasicPostAPIView(GenericAPIView):
     http_method_names = ['post']
+    success_message = ''
     
     def do_action_post(self, serializer, request):
         pass
@@ -33,18 +34,22 @@ class BasicPostAPIView(GenericAPIView):
         serializer = serializer.validated_data
 
         try:
-            try:
-                sid = transaction.savepoint()
-                result = self.do_action_post(serializer, request)
-            except Exception as e:
-                transaction.savepoint_rollback(sid)
-                raise e
+            with transaction.atomic():
+                try:
+                    sid = transaction.savepoint()
+                    result = self.do_action_post(serializer, request)
+                except Exception as e:
+                    transaction.savepoint_rollback(sid)
+                    raise e
             
             transaction.savepoint_commit(sid)
 
             data = {'status': 'success'}
             
             if not result: result = {}
+            
+            if not result.get('message'):
+                result['message'] = self.success_message
             
             data['message'] = result.get('message', 'Success') if result else 'Success'
 
