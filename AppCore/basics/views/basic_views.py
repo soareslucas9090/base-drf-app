@@ -33,14 +33,20 @@ class BasicPostAPIView(GenericAPIView):
         serializer = serializer.validated_data
 
         try:
-            result = {}
-            
-            with transaction.atomic():
+            try:
+                sid = transaction.savepoint()
                 result = self.do_action_post(serializer, request)
+            except Exception as e:
+                transaction.savepoint_rollback(sid)
+                raise e
             
+            transaction.savepoint_commit(sid)
+
             data = {'status': 'success'}
             
-            data['message'] = result.get('message', 'Success')
+            if not result: result = {}
+            
+            data['message'] = result.get('message', 'Success') if result else 'Success'
 
             return Response(
                 data, status=result.get('status_code', status.HTTP_200_OK)

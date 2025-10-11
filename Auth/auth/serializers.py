@@ -19,11 +19,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         default='user'
     )
     
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        return token
-    
     def validate(self, attrs):
         login_type = attrs.pop('type', 'user')
         
