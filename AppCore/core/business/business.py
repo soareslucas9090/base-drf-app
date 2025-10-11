@@ -14,7 +14,15 @@ A camada Business:
 - Pode chamar State para transições de estado
 - Deve retornar resultados processados ou lançar exceções tratadas
 """
+from django.core.exceptions import ObjectDoesNotExist
+
+from AppCore.core.exceptions.exceptions import (
+    AuthorizationException, BusinessRuleException, ValidationException, NotFoundException
+)
+
 
 class ModelInstanceBusiness:
-    def __init__(self, object_instance):
+    exceptions_handled = (AuthorizationException, BusinessRuleException, ValidationException, NotFoundException, ObjectDoesNotExist)
+    
+    def __init__(self, object_instance=None):
         self.object_instance = object_instance

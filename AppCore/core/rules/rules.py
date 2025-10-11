@@ -16,7 +16,7 @@ Métodos padrões que toda classe de Rules deve ter:
 from AppCore.core.exceptions.exceptions import BusinessRuleException
 
 class ModelInstanceRules:
-    def __init__(self, object_instance):
+    def __init__(self, object_instance=None):
         self.object_instance = object_instance
 
     def return_exception(self, message='', details=None):
