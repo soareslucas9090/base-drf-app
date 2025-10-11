@@ -44,6 +44,19 @@ DATABASES = {
     }
 }
 
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
+
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+
+# As configurações padrões são para o serviço de email do Google, mas podem ser alteradas
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT = os.environ.get("EMAIL_PORT", 587)
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", True)
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
 DEFAULT_ROOT_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -72,7 +85,6 @@ USERS_APPS = [
 INSTALLED_APPS = DEFAULT_ROOT_APPS + AUTH_APPS + USERS_APPS
 
 MIDDLEWARE = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
