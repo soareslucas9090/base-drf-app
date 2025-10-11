@@ -20,13 +20,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-SPECTACULAR_SETTINGS = {
-    'TITLE': os.environ.get('TITLE_API', 'BaseDRFApp'),
-    'DESCRIPTION': os.environ.get('DESCRIPTION_API', ''),
-    'VERSION': os.environ.get('VERSION_API', '0.1'),
-    'SERVE_INCLUDE_SCHEMA': False,
-}
-
 signing_key = os.environ.get('SIMPLE_JWT_SIGNING_KEY')
 
 SIMPLE_JWT = {

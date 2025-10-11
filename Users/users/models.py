@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractBaseUser, AbstractUser, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permission, PermissionsMixin
 from django.db import models
 from django.utils import timezone
 
@@ -8,6 +8,55 @@ from AppCore.core.helpers.helpers_mixin import ModelHelperMixin
 from .helpers import UserHelpers
 from . import choices
 
+
+class UserManager(BaseUserManager):
+    def create_user(self, email, name, password=None, phone=None, birth_date=None, profiles=None, **extra_fields):
+        if not email:
+            raise ValueError('O usuário deve ter um email')
+        if not name:
+            raise ValueError('O usuário deve ter um nome')
+        
+        email = self.normalize_email(email)
+        
+        extra_fields.setdefault('is_staff', False)
+        extra_fields.setdefault('is_superuser', False)
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('status', choices.USER_STATUS_ATIVO)
+        
+        user = self.model(
+            email=email,
+            name=name,
+            phone=phone,
+            birth_date=birth_date,
+            **extra_fields
+        )
+        
+        if password:
+            user.set_password(password)
+        
+        user.save()
+        
+        return user
+    
+    def create_superuser(self, email, name, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('status', choices.USER_STATUS_ATIVO)
+        extra_fields.setdefault('email_verified', True)
+        
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superusuário deve ter is_staff=True')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superusuário deve ter is_superuser=True')
+        
+        return self.create_user(
+            email=email,
+            name=name,
+            password=password,
+            **extra_fields
+        )
+    
 
 class User(AbstractBaseUser, PermissionsMixin, BasicModel, ModelHelperMixin):
     name = models.CharField(
@@ -52,6 +101,7 @@ class User(AbstractBaseUser, PermissionsMixin, BasicModel, ModelHelperMixin):
         default=timezone.now
     )
 
+    objects = UserManager()
     USERNAME_FIELD = "email"
     helper_class = UserHelpers
     
@@ -123,7 +173,11 @@ class Profile(BasicModel, ModelHelperMixin):
         verbose_name = 'Perfil'
         verbose_name_plural = 'Perfis'
         ordering = ['-created_at']
-        unique_together = ['user', 'type']
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "type"], name="unique_profile_user_constraint"
+            )
+        ]
     
     def __str__(self):
         return f'{self.user.name} - {self.get_type_display()}'

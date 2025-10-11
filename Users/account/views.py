@@ -27,10 +27,10 @@ class CreateAccountPostView(BasicPostAPIView):
     success_message = "Código de verificação enviado para o email informado."
     
     def _exists_user_profile(self, email, type_profile):
-        if User.object.filter(email=email, profiles__type=type_profile).exists(): 
+        if User.objects.filter(email=email, profiles__type=type_profile).exists(): 
             return {
                 'message': 'Já existe um usuário com este email para este perfil.',
-                'status_code': status.HTTP_404_NOT_FOUND
+                'status_code': status.HTTP_400_BAD_REQUEST
             }
             
     def _del_codes_expired(self, email):
@@ -69,10 +69,11 @@ class CreateAccountPostView(BasicPostAPIView):
             f"Código de recuperação de senha: {email_account_code.code}",
             settings.DEFAULT_FROM_EMAIL,
             [email],
-            EMAIL_CREATE_ACCOUNT.format(code=email_account_code.code)
+            EMAIL_CREATE_ACCOUNT % email_account_code.code
         )
 
-        
+
+@extend_schema(tags=["Users.Create account"])       
 class CreateAccountConfirmCodePostView(BasicPostAPIView):
     serializer_class = CreateAccountConfirmCodeSerializer
     permission_classes = [AllowAny]
@@ -89,6 +90,7 @@ class CreateAccountConfirmCodePostView(BasicPostAPIView):
         email_account_code.save()
 
 
+@extend_schema(tags=["Users.Create account"])
 class ConfirmPasswordAccountPostView(BasicPostAPIView):
     serializer_class = PasswordConfirmCreateAccountSerializer
     permission_classes = [AllowAny]
@@ -109,7 +111,7 @@ class ConfirmPasswordAccountPostView(BasicPostAPIView):
         type_profile = serializer.get('type_profile')
         bio = serializer.get('bio')
         
-        User.object.create_user(
+        User.objects.create_user(
             email=email,
             name=serializer.get('name'),
             password=password,

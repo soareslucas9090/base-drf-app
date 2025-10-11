@@ -57,7 +57,7 @@ EMAIL_CREATE_ACCOUNT = """
             <p>Recebemos a requisição para criar uma conta com este email. Para validar a criação, use o código abaixo:</p>
             
             <div class="code-container">
-            {code}
+            %s
             </div>
             
             <p>Se você não solicitou a criação da conta, por favor, ignore este email.</p>
