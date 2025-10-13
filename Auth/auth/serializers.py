@@ -6,14 +6,14 @@ from AppCore.common.texts.messages import (
     USUARIO_INATIVO_OU_SUSPENSO, USUARIO_SEM_PERFIL_CADASTRADO, PERFIL_INATIVO_OU_SUSPENSO
 )
 
-from Users.users.choices import USER_STATUS_ATIVO, PROFILE_STATUS_ATIVO, PROFILE_TYPE_MANAGER
+from Users.users.choices import USER_STATUS_ATIVO, PROFILE_STATUS_ATIVO, PROFILE_TYPE_CHOICES
 
 User = get_user_model()
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     type = serializers.ChoiceField(
-        choices=['user', 'manager'],
+        choices=PROFILE_TYPE_CHOICES,
         required=False,
         allow_blank=True,
         default='user'
