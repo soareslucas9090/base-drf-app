@@ -2,14 +2,14 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 from django.utils import timezone
 
-from AppCore.basics.models.models import BasicModel
+from AppCore.basics.models.models import BasicModel, Base404ExceptionManager
 from AppCore.core.helpers.helpers_mixin import ModelHelperMixin
 
 from .helpers import UserHelpers
 from . import choices
 
 
-class UserManager(BaseUserManager):
+class UserManager(Base404ExceptionManager):
     def create_user(self, email, name, password=None, phone=None, birth_date=None, profiles=None, **extra_fields):
         if not email:
             raise ValueError('O usuário deve ter um email')
@@ -131,6 +131,10 @@ class PasswordResetCode(BasicModel):
         return f"User {self.user}, code {self.code}"
 
     class Meta:
+        db_table = 'password_reset_codes'
+        verbose_name = 'Código de redefinição de senha'
+        verbose_name_plural = 'Códigos de redefinição de senha'
+        ordering = ['-created_at']
         constraints = [
             models.UniqueConstraint(
                 fields=["user", "code"], name="unique_code_user_constraint"
