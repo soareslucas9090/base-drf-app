@@ -11,8 +11,8 @@ class EmailAccountCode(BasicModel):
     
     class Meta:
         db_table = 'email_account_codes'
-        verbose_name = 'Código de Verificação de Email'
-        verbose_name_plural = 'Códigos de Verificação de Email'
+        verbose_name = 'Código de verificação de email'
+        verbose_name_plural = 'Códigos de verificação de email'
         ordering = ['-created_at']
 
     def __str__(self):

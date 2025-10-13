@@ -1,7 +1,6 @@
 from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
 from django.db import transaction
-from django.core.exceptions import ObjectDoesNotExist
 from drf_spectacular.utils import (
     OpenApiResponse,
     extend_schema,
@@ -12,12 +11,12 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from AppCore.core.exceptions.exceptions import (
-    BusinessRuleException, SystemErrorException, ValidationException, AuthorizationException
+    BusinessRuleException, SystemErrorException, ValidationException, AuthorizationException, NotFoundException
 )
 
 from AppCore.common.texts.messages import (
     RESPONSE_TENTE_NOVAMENTE, RESPONSE_ALGO_QUE_MANDOU_ESTA_ERRADO, RESPONSE_VOCE_NAO_PODE_FAZER_ISSO,
-    RESPONSE_VOCE_NAO_PODE_FAZER_ISSO
+    RESPONSE_VOCE_NAO_PODE_FAZER_ISSO, RESPONSE_ALGUM_DADO_NAO_FOI_ENCONTRADO
 )
 
 
@@ -42,7 +41,7 @@ class BasicPostAPIView(GenericAPIView):
                     transaction.savepoint_rollback(sid)
                     raise e
             
-            transaction.savepoint_commit(sid)
+                transaction.savepoint_commit(sid)
 
             data = {'status': 'success'}
             
@@ -88,9 +87,13 @@ class BasicPostAPIView(GenericAPIView):
             return Response(
                 {'status': 'error', 'detail': RESPONSE_VOCE_NAO_PODE_FAZER_ISSO}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-        except ObjectDoesNotExist as err:
+        except NotFoundException as err:
+            if str(err):
+                return Response(
+                    {'status': 'error', 'detail': str(err)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
             return Response(
-                {'status': 'error', 'detail': 'Objeto não encontrado.'}, status=status.HTTP_404_NOT_FOUND
+                {'status': 'error', 'detail': RESPONSE_ALGUM_DADO_NAO_FOI_ENCONTRADO}, status=status.HTTP_404_NOT_FOUND
             )
         
         except Exception as err:

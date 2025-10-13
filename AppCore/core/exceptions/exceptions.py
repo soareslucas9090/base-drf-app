@@ -1,7 +1,6 @@
 """
 Exceções customizadas para a aplicação.
 """
-from django.core.exceptions import ObjectDoesNotExist
 
 
 class BusinessRuleException(Exception):
@@ -65,7 +64,7 @@ class AuthorizationException(Exception):
         super().__init__(self.message)
         
 
-class NotFoundException(ObjectDoesNotExist):
+class NotFoundException(Exception):
     """
     Exceção levantada quando um objeto não é encontrado.
     
