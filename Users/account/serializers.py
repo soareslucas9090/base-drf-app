@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from Users.users.choices import PROFILE_TYPE_CHOICES
+import re
 
 
 class CreateAccountSerializer(serializers.Serializer):
@@ -56,8 +57,29 @@ class PasswordConfirmCreateAccountSerializer(serializers.Serializer):
     def validate_password(self, value):
         if len(value) < 8:
             raise serializers.ValidationError(
-                "A senha precisa ter 8 caracteres ou mais."
+            "A senha deve ter pelo menos 8 caracteres."
             )
+        
+        if not re.search(r'[A-Z]', value):
+            raise serializers.ValidationError(
+            "A senha deve conter pelo menos uma letra maiúscula."
+            )
+        
+        if not re.search(r'[a-z]', value):
+            raise serializers.ValidationError(
+            "A senha deve conter pelo menos uma letra minúscula."
+            )
+        
+        if not re.search(r'\d', value):
+            raise serializers.ValidationError(
+            "A senha deve conter pelo menos um número."
+            )
+        
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', value):
+            raise serializers.ValidationError(
+            "A senha deve conter pelo menos um caractere especial."
+            )
+        
         return value
     
     def validate_code(self, value):

@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 
 from AppCore.basics.views.basic_views import BasicPostAPIView
+from AppCore.basics.mixins.mixins import AllowAnyMixin
 
 from .serializers import (
     CreateAccountSerializer, CreateAccountConfirmCodeSerializer, PasswordConfirmCreateAccountSerializer
@@ -13,9 +14,8 @@ from .business import AccountBusiness
 
 
 @extend_schema(tags=["Users.Create account"])
-class CreateAccountPostView(BasicPostAPIView):
+class CreateAccountPostView(BasicPostAPIView, AllowAnyMixin):
     serializer_class = CreateAccountSerializer
-    permission_classes = [AllowAny]
     success_message = "Código de verificação enviado para o email informado."
     
     def do_action_post(self, serializer, request):
@@ -30,9 +30,8 @@ class CreateAccountPostView(BasicPostAPIView):
 
 
 @extend_schema(tags=["Users.Create account"])       
-class CreateAccountConfirmCodePostView(BasicPostAPIView):
+class CreateAccountConfirmCodePostView(BasicPostAPIView, AllowAnyMixin):
     serializer_class = CreateAccountConfirmCodeSerializer
-    permission_classes = [AllowAny]
     success_message = "Código verificado. Você pode prosseguir com a criação da conta."
     
     def do_action_post(self, serializer, request):
@@ -45,9 +44,8 @@ class CreateAccountConfirmCodePostView(BasicPostAPIView):
 
         
 @extend_schema(tags=["Users.Create account"])
-class ConfirmPasswordAccountPostView(BasicPostAPIView):
+class ConfirmPasswordAccountPostView(BasicPostAPIView, AllowAnyMixin):
     serializer_class = PasswordConfirmCreateAccountSerializer
-    permission_classes = [AllowAny]
     success_message = "Usuário criado com sucesso."
     
     def do_action_post(self, serializer, request):
