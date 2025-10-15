@@ -46,8 +46,8 @@ class AccountBusiness(ModelInstanceBusiness):
     def send_verification_email(self, email, email_account_code):
         try:
             send_simple_email(
-                "Recuperação de senha",
-                f"Código de recuperação de senha: {email_account_code.code}",
+                "Criação de conta - Código de verificação",
+                f"Código de verificação: {email_account_code.code}",
                 settings.DEFAULT_FROM_EMAIL,
                 [email],
                 EMAIL_CREATE_ACCOUNT % email_account_code.code
