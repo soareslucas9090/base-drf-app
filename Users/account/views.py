@@ -14,7 +14,7 @@ from .business import AccountBusiness
 
 
 @extend_schema(tags=["Users.Create account"])
-class CreateAccountPostView(BasicPostAPIView, AllowAnyMixin):
+class CreateAccountPostView(AllowAnyMixin, BasicPostAPIView):
     serializer_class = CreateAccountSerializer
     success_message = "Código de verificação enviado para o email informado."
     
@@ -30,7 +30,7 @@ class CreateAccountPostView(BasicPostAPIView, AllowAnyMixin):
 
 
 @extend_schema(tags=["Users.Create account"])       
-class CreateAccountConfirmCodePostView(BasicPostAPIView, AllowAnyMixin):
+class CreateAccountConfirmCodePostView(AllowAnyMixin, BasicPostAPIView):
     serializer_class = CreateAccountConfirmCodeSerializer
     success_message = "Código verificado. Você pode prosseguir com a criação da conta."
     
@@ -44,7 +44,7 @@ class CreateAccountConfirmCodePostView(BasicPostAPIView, AllowAnyMixin):
 
         
 @extend_schema(tags=["Users.Create account"])
-class ConfirmPasswordAccountPostView(BasicPostAPIView, AllowAnyMixin):
+class ConfirmPasswordAccountPostView(AllowAnyMixin, BasicPostAPIView):
     serializer_class = PasswordConfirmCreateAccountSerializer
     success_message = "Usuário criado com sucesso."
     
