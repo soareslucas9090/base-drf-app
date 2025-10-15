@@ -2,14 +2,14 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.db import models
 from django.utils import timezone
 
-from AppCore.basics.models.models import BasicModel, Base404ExceptionManager
+from AppCore.basics.models.models import BasicModel, Base404ExceptionUserManager
 from AppCore.core.helpers.helpers_mixin import ModelHelperMixin
 
 from .helpers import UserHelpers
 from . import choices
 
 
-class UserManager(Base404ExceptionManager):
+class UserManager(Base404ExceptionUserManager):
     def create_user(self, email, name, password=None, phone=None, birth_date=None, profiles=None, **extra_fields):
         if not email:
             raise ValueError('O usuário deve ter um email')
