@@ -1,13 +1,6 @@
-from django.core.mail import EmailMultiAlternatives
-from django.utils import timezone
 from django.db import transaction
-from drf_spectacular.utils import (
-    OpenApiResponse,
-    extend_schema,
-)
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from AppCore.core.exceptions.exceptions import (
@@ -25,14 +18,17 @@ class BasicPostAPIView(GenericAPIView):
     success_message = ''
     
     def do_action_post(self, serializer, request):
-        raise SystemErrorException("Este método não foi implementado.")
+        raise NotImplementedError(
+            f'{self.__class__.__name__} deve implementar o método do_action_post(serializer, request)'
+        )
 
     def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer = serializer.validated_data
-
         try:
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer = serializer.validated_data
+
+        
             with transaction.atomic():
                 try:
                     sid = transaction.savepoint()
@@ -55,6 +51,7 @@ class BasicPostAPIView(GenericAPIView):
             return Response(
                 data, status=result.get('status_code', status.HTTP_200_OK)
             )
+
         except BusinessRuleException as err:
             return Response(
                 {'status': 'error', 'detail': str(err) or RESPONSE_TENTE_NOVAMENTE}, status=status.HTTP_400_BAD_REQUEST

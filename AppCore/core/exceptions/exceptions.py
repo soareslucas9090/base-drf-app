@@ -2,8 +2,14 @@
 Exceções customizadas para a aplicação.
 """
 
+class BaseSystemException(Exception):
+    def __init__(self, message: str, details: dict = None):
+        self.message = message
+        self.details = details or {}
+        super().__init__(self.message)
+    
 
-class BusinessRuleException(Exception):
+class BusinessRuleException(BaseSystemException):
     """
     Exceção levantada quando uma regra de negócio é violada.
     
@@ -12,14 +18,9 @@ class BusinessRuleException(Exception):
     possui dependências, ou realizar uma ação não permitida pelo estado
     atual do sistema.
     """
-    
-    def __init__(self, message: str, details: dict = None):
-        self.message = message
-        self.details = details or {}
-        super().__init__(self.message)
 
 
-class SystemErrorException(Exception):
+class SystemErrorException(BaseSystemException):
     """
     Exceção levantada quando ocorre um erro interno do sistema.
     
@@ -27,14 +28,9 @@ class SystemErrorException(Exception):
     conexão com banco de dados, serviços externos indisponíveis, ou
     qualquer outro erro técnico que não seja causado pelo usuário.
     """
-    
-    def __init__(self, message: str, details: dict = None):
-        self.message = message
-        self.details = details or {}
-        super().__init__(self.message)
 
 
-class ValidationException(Exception):
+class ValidationException(BaseSystemException):
     """
     Exceção levantada quando há erro na validação de dados.
     
@@ -42,14 +38,9 @@ class ValidationException(Exception):
     aos critérios de validação, como campos obrigatórios ausentes,
     formatos incorretos, ou valores fora do intervalo permitido.
     """
-    
-    def __init__(self, message: str, details: dict = None):
-        self.message = message
-        self.details = details or {}
-        super().__init__(self.message)
 
 
-class AuthorizationException(Exception):
+class AuthorizationException(BaseSystemException):
     """
     Exceção levantada quando há erro de autorização.
     
@@ -57,14 +48,9 @@ class AuthorizationException(Exception):
     ações para as quais não possui permissão, diferente de autenticação
     (que verifica identidade).
     """
-    
-    def __init__(self, message: str, details: dict = None):
-        self.message = message
-        self.details = details or {}
-        super().__init__(self.message)
         
 
-class NotFoundException(Exception):
+class NotFoundException(BaseSystemException):
     """
     Exceção levantada quando um objeto não é encontrado.
     
@@ -72,8 +58,3 @@ class NotFoundException(Exception):
     repositório de dados não retorna o objeto esperado, indicando que
     o recurso solicitado não existe.
     """
-    
-    def __init__(self, message: str = 'Objeto não encontrado.', details: dict = None):
-        self.message = message
-        self.details = details or {}
-        super().__init__(self.message)
