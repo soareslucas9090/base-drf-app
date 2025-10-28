@@ -9,14 +9,14 @@ from .helpers import UserHelpers
 from . import choices
 
 
-class UserManager(Base404ExceptionManager):
+class UserManager(BaseUserManager, Base404ExceptionManager):
     def create_user(self, email, name, password=None, phone=None, birth_date=None, profiles=None, **extra_fields):
         if not email:
             raise ValueError('O usuário deve ter um email')
         if not name:
             raise ValueError('O usuário deve ter um nome')
         
-        email = self.normalize_email(email)
+        email = self.normalize_email(email)  # Agora este método estará disponível
         
         extra_fields.setdefault('is_staff', False)
         extra_fields.setdefault('is_superuser', False)
@@ -38,7 +38,21 @@ class UserManager(Base404ExceptionManager):
         
         return user
     
-    def create_superuser(self, email, name, password=None, **extra_fields):
+    def create_superuser(self, email, password=None, **extra_fields):
+        from django.core.management.base import CommandError
+        
+        # Se name não foi fornecido, pedir interativamente
+        if 'name' not in extra_fields:
+            try:
+                name = input("Nome: ")
+                if not name:
+                    raise CommandError("Nome não pode ser vazio.")
+                extra_fields['name'] = name
+            except (KeyboardInterrupt, EOFError):
+                raise CommandError("Operação cancelada.")
+        
+        name = extra_fields.pop('name')
+        
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
@@ -56,6 +70,25 @@ class UserManager(Base404ExceptionManager):
             password=password,
             **extra_fields
         )
+    
+    def get_by_natural_key(self, username):
+        """
+        Método necessário para o sistema de autenticação do Django
+        Busca usuário pelo username natural (que no seu caso é o email)
+        """
+        # Usa filter para evitar exceções personalizadas
+        users = self.filter(**{self.model.USERNAME_FIELD: username})
+        if users.exists():
+            return users.first()
+        # Levanta a exceção padrão que o Django espera
+        raise self.model.DoesNotExist(
+            f"{self.model._meta.object_name} matching query does not exist."
+        )
+    
+    def _is_interactive(self):
+        """Verifica se está em modo interativo"""
+        import sys
+        return sys.stdin.isatty()
     
 
 class User(AbstractBaseUser, PermissionsMixin, BasicModel, ModelHelperMixin):

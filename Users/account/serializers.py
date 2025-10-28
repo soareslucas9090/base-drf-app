@@ -104,3 +104,51 @@ class PasswordConfirmCreateAccountSerializer(serializers.Serializer):
             raise serializers.ValidationError("As senhas não conferem.")
 
         return data
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField(write_only=True)
+    type_profile = serializers.CharField(write_only=True)
+
+class PasswordResetConfirmCodeSerializer(serializers.Serializer):
+    email = serializers.EmailField(write_only=True)
+    code = serializers.CharField(write_only=True)
+
+    def validate_code(self, value):
+        if len(value) != 6:
+            raise serializers.ValidationError("O código deve possuir 6 dígitos.")
+        return value
+
+
+class PasswordResetNewPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(write_only=True)
+    code = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+    new_password_confirm = serializers.CharField(write_only=True)
+
+    def validate_new_password(self, value):
+        if len(value) < 8:
+            raise serializers.ValidationError("A senha deve ter pelo menos 8 caracteres.")
+        
+        if not re.search(r'[A-Z]', value):
+            raise serializers.ValidationError("A senha deve conter pelo menos uma letra maiúscula.")
+        
+        if not re.search(r'[a-z]', value):
+            raise serializers.ValidationError("A senha deve conter pelo menos uma letra minúscula.")
+        
+        if not re.search(r'\d', value):
+            raise serializers.ValidationError("A senha deve conter pelo menos um número.")
+        
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', value):
+            raise serializers.ValidationError("A senha deve conter pelo menos um caractere especial.")
+        
+        return value
+
+    def validate_code(self, value):
+        if len(value) != 6:
+            raise serializers.ValidationError("O código deve possuir 6 dígitos.")
+        return value
+
+    def validate(self, data):
+        if data['new_password'] != data['new_password_confirm']:    
+            raise serializers.ValidationError("As senhas não conferem.")
+        return data

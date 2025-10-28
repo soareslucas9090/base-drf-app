@@ -69,3 +69,25 @@ EMAIL_CREATE_ACCOUNT = """
     </body>
 </html>
 """
+# texts/emails.py - Adicione este template
+EMAIL_PASSWORD_RESET = """
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .code { font-size: 24px; font-weight: bold; color: #2563eb; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Recuperação de Senha</h2>
+        <p>Você solicitou a recuperação de senha. Use o código abaixo:</p>
+        <p class="code">%s</p>
+        <p>Este código expira em 30 minutos.</p>
+        <p>Se você não solicitou esta recuperação, ignore este email.</p>
+    </div>
+</body>
+</html>
+"""
